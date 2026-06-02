@@ -1,0 +1,51 @@
+1. What is a server?
+    A server is a computer (hardware and/or software) that provides services to other computers over a network.
+    Unlike a personal computer, it runs 24/7 and is designed to handle multiple simultaneous requests.
+
+-----------------------------------------------------------------------------------------------------------
+
+2. What is the role of the domain name?
+    The domain name (foobar.com) is a human-readable alias for an IP address.
+    Instead of typing 8.8.8.8, users type www.foobar.com. The DNS system handles the translation.
+
+-----------------------------------------------------------------------------------------------------------
+
+3. What type of DNS record is www in www.foobar.com?
+    It's an A record. An A record maps a hostname directly to an IPv4 address, here www.foobar → 8.8.8.8.
+
+-----------------------------------------------------------------------------------------------------------
+
+4. What is the role of the web server (Nginx)?
+    NginX receives incoming HTTP/HTTPS requests.
+    It serves static files (images, CSS, JS) directly, and forwards dynamic requests to the application server.
+
+-----------------------------------------------------------------------------------------------------------
+
+5. What is the role of the application server?
+    It executes the application's business logic (the code).
+    It processes dynamic requests, interacts with the database, and returns the result to Nginx, which sends it back to the user.
+
+-----------------------------------------------------------------------------------------------------------
+
+6. What is the role of the database (MySQL)?
+    It stores and manages persistent data - users, content, orders, etc. The application server queries it via SQL to read or write data.
+
+-----------------------------------------------------------------------------------------------------------
+
+7. What does the server use to communicate with the user's computer?
+    The HTTP/HTTPS protocol, transported over TCP/IP.
+
+-----------------------------------------------------------------------------------------------------------
+
+8. SPOF (Single Point of Failure)
+    There is only one server. If it goes down, the entire website is unavailable - no redundancy, no failover.
+
+-----------------------------------------------------------------------------------------------------------
+
+9. Downtime during maintenance 
+    Deploying new code often requires restarting Nginx or the app server. During that restart, the site is unreachable.
+
+-----------------------------------------------------------------------------------------------------------
+
+10. Cannot scale with high traffic
+    One server has limited CPU and RAM. If traffic spikes, it gets overwhelmed. There is no way to add more servers to distribute the load.

@@ -1,0 +1,18 @@
+Why each additional element?
+
+    * 2nd HAProxy (cluster):
+        The previous infrastructure had the load balancer as a SPOF.
+        With two HAProxy in active-passive cluster, if HAProxy 1 goes down, HAProxy 2 takes over automatically.
+        No more single point of failure at the entry point
+    
+    * Dedicated web server (Nginx):
+        Separating Nginx onto its own machine means it no longer competes for CPU and RAM with the application or the database.
+        It can also be scaled independently if static traffic increases.
+
+    * Dedicated application server:
+        The business logic runs in isolation.
+        If the app needs more resources, you scale only that server without touching the web server or the database.
+
+    * Dedicated database server:
+        MySQL gets its own resources, disk I/O, RAM, CPU, without interference from Nginx or the app.
+        Database performance is critical, it should never share a machine with other components.

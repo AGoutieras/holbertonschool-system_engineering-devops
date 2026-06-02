@@ -1,0 +1,59 @@
+1. Why each additional element?
+    * 3 firewalls:
+        One in front of the load balancer, one in front of each server.
+        They filter incoming traffic and block unauthorized connections.
+
+    * SSL certificate:
+        Encrypts traffic between the user and HAProxy so data cannot be intercepted in transit.
+    
+    * 3 monitoring clients:
+        One on each machine (LB + 2 servers).
+        They collect metrics and send them to Sumo Logic so you can observe the health of the whole infrastructure.
+
+-----------------------------------------------------------------------------------------------------------
+
+2. What are firewalls for?
+    A firewall filters network traffic based on rules.
+    It blocks unauthorized ports and IPs, and only allows legitimate traffic through, for example, only port 443 (HTTPS) from the internet.
+
+-----------------------------------------------------------------------------------------------------------
+
+3. Why is traffic served over HTTPS?
+    HTTP sends data in plain text.
+    HTTPS encrypts it with SSL/TLS so that passwords, personal data and session tokens cannot be intercepted by a third party between the user and the server.
+
+-----------------------------------------------------------------------------------------------------------
+
+4. What is monitoring used for?
+    Monitoring tracks the health and performance of your infrastructure in real time, CPU usage, memory, response times, error rates.
+    It alerts you when something goes wrong before users notice.
+
+-----------------------------------------------------------------------------------------------------------
+
+5. How does the monitoring tool collect data?
+    Each monitoring client runs as an agent on its machine.
+    It collects logs and metrics locally, then ships them to Sumo Logic over the network. Sumo Logic aggregates everything in one dashboard.
+
+-----------------------------------------------------------------------------------------------------------
+
+6. How to monitor web server QPS (queries per second)?
+    Configure the monitoring agent to read Nginx access logs or expose Nginx metrics.
+    The agent counts requests per second and sends that metric to Sumo Logic where you can set up dashboards and alerts.
+
+-----------------------------------------------------------------------------------------------------------
+
+7. Why is terminating SSL at the load balancer level an issue?
+    Once HAProxy decrypts the traffic, it forwards it to the servers in plain HTTP.
+    So traffic between the load balancer and the servers is unencrypted, if someone has access to the internal network, they can read it.
+
+-----------------------------------------------------------------------------------------------------------
+
+8. Why is having only one MySQL server capable of accepting writes an issue?
+    All writes go to the primary. If it crashes, no data can be written until it recovers.
+    It is both a SPOF and a performance bottleneck for write-heavy applications.
+
+-----------------------------------------------------------------------------------------------------------
+
+9. Why is having servers with all the same components a problem?
+    If the database consumes too much CPU or RAM, it impacts Nginx and the app server on the same machine, they compete for resources.
+    It also makes scaling harder: you cannot scale just the database or just the web server independently.

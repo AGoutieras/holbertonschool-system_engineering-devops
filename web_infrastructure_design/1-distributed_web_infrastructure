@@ -1,0 +1,62 @@
+1. Why each additional element?
+    * HAProxy:
+        Without it, you can only have one server, no way to distribute traffic.
+        It's the entry point that routes requests across multiple servers.
+
+    * 2nd server:
+        Eliminates the single server bottleneck. If one server goes down, the other keeps the site alive.
+        Also splits the load between two machines.
+
+    * MySQL replica:
+        If the primary database crashes, you still have a copy of the data. Also offloads read queries from the primary.
+
+-----------------------------------------------------------------------------------------------------------
+
+2. What distribution algorithm is HAProxy configured with?
+    Round-robin. It sends each new request to the next server in turn, request 1 goes to Server 1, request 2 to Server 2,
+    request 3 back to Server 1, and so on. Simple and equal distribution, assumes both servers have the same capacity.
+
+-----------------------------------------------------------------------------------------------------------
+
+3. Active-Active vs Active-Passive
+    * Active-Active:
+        Both servers are running and handling traffic simultaneously. HAProxy splits the load between them.
+
+    * Active-Passive:
+        Only one server handles traffic. The second one is on standby and only takes over if the first one fails. No load sharing.
+
+-----------------------------------------------------------------------------------------------------------
+
+4. How does a Primary-Replica (Master-Slave) cluster work?
+    Every write (INSERT, UPDATE, DELETE) goes to the primary. The primary logs every change and continuously replicates it to the replica.
+    The replica stays in sync and can serve read queries (SELECT).
+
+-----------------------------------------------------------------------------------------------------------
+
+5. Difference between Primary and Replica from the application's perspective
+    * The primary is the source of truth, the app writes to it.
+
+    * The replica is read-only, the app can query it for reads to reduce load on the primary. But it cannot accept writes directly.
+
+-----------------------------------------------------------------------------------------------------------
+
+6. SPOF
+    * The HAProxy load balancer is a single point of failure.
+    If it goes down, no request reaches either server, the whole site is dead despite having 2 servers.
+
+    * The primary database is also a SPOF for writes. If it crashes, the app can no longer write data.
+
+-----------------------------------------------------------------------------------------------------------
+
+7. Security issues
+    * No firewall:
+        The servers are directly exposed to the internet, anyone can try to connect to any port.
+    
+    * No HTTPS:
+        Traffic between the user and the server is unencrypted, vulnerable to interception.
+
+-----------------------------------------------------------------------------------------------------------
+
+8. No monitoring
+    There is no system watching the health of the servers.
+    If a server silently goes down or starts responding slowly, nobody gets alerted. You only find out when user complain.
